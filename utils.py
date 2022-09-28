@@ -25,7 +25,8 @@ def build_dictionaries(clevr_dir):
         raise ValueError('Answer {} does not belong to a known class'.format(answer))
         
         
-    cached_dictionaries = os.path.join(clevr_dir, 'questions', 'CLEVR_built_dictionaries.pkl')
+    cached_dictionaries = os.path.join(clevr_dir, 'CLEVR_built_dictionaries.pkl')
+    # cached_dictionaries = os.path.join(clevr_dir, 'questions', 'CLEVR_built_dictionaries.pkl')
     if os.path.exists(cached_dictionaries):
         print('==> using cached dictionaries: {}'.format(cached_dictionaries))
         with open(cached_dictionaries, 'rb') as f:
@@ -34,7 +35,8 @@ def build_dictionaries(clevr_dir):
     quest_to_ix = {}
     answ_to_ix = {}
     answ_ix_to_class = {}
-    json_train_filename = os.path.join(clevr_dir, 'questions', 'CLEVR_train_questions.json')
+    json_train_filename = os.path.join(clevr_dir, 'CLEVR-XAI_simple_questions.json')
+    # json_train_filename = os.path.join(clevr_dir, 'questions', 'CLEVR_train_questions.json')
     #load all words from all training data
     with open(json_train_filename, "r") as f:
         questions = json.load(f)['questions']

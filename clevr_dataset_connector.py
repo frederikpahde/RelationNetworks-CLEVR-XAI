@@ -5,7 +5,7 @@ from PIL import Image
 
 from collections import Counter
 from torch.utils.data import Dataset
-
+import numpy as np
 import utils
 import torch
 
@@ -19,9 +19,12 @@ class ClevrDataset(Dataset):
                 on a sample.
         """
         if train:
-            quest_json_filename = os.path.join(clevr_dir, 'questions', 'CLEVR_train_questions.json')
-            self.img_dir = os.path.join(clevr_dir, 'images', 'train')
+            quest_json_filename = os.path.join(clevr_dir, 'CLEVR-XAI_simple_questions.json')
+            self.img_dir = os.path.join(clevr_dir, 'images')
+            self.mask_dir = os.path.join(clevr_dir, 'ground_truth_simple_questions_single_object')
+            # self.img_dir = os.path.join(clevr_dir, 'images', 'train')
         else:
+            raise ValueError("There is no validation set!")
             quest_json_filename = os.path.join(clevr_dir, 'questions', 'CLEVR_val_questions.json')
             self.img_dir = os.path.join(clevr_dir, 'images', 'val')
 
@@ -53,6 +56,8 @@ class ClevrDataset(Dataset):
         current_question = self.questions[idx]
         img_filename = os.path.join(self.img_dir, current_question['image_filename'])
         image = Image.open(img_filename).convert('RGB')
+        path_mask = f"{self.mask_dir}/{current_question['question_index']}.npy"
+        gt = np.load(path_mask).astype(int)
 
         question = utils.to_dictionary_indexes(self.dictionaries[0], current_question['question'])
         answer = utils.to_dictionary_indexes(self.dictionaries[1], current_question['answer'])
@@ -63,7 +68,7 @@ class ClevrDataset(Dataset):
             image = numpy.transpose(image, (1,2,0))
             image = Image.fromarray(image.astype('uint8'), 'RGB')'''
         
-        sample = {'image': image, 'question': question, 'answer': answer}
+        sample = {'image': image, 'gt_single': gt, 'question': question, 'answer': answer, 'question_text': current_question['question'], 'answer_text': current_question['answer']}
 
         if self.transform:
             sample['image'] = self.transform(sample['image'])

@@ -159,7 +159,8 @@ class RelationalLayer(RelationalLayerBase):
         x_f = F.relu(x_f)
         x_f = self.f_fc3(x_f)
 
-        return F.log_softmax(x_f, dim=1)
+        # return F.log_softmax(x_f, dim=1)
+        return x_f
 
 class RN(nn.Module):
     def __init__(self, args, hyp, extraction=False):
@@ -196,7 +197,6 @@ class RN(nn.Module):
             if self.coord_tensor is None or torch.cuda.device_count() == 1:
                 self.build_coord_tensor(b, d)                  # (B x 2 x 8 x 8)
                 self.coord_tensor = self.coord_tensor.view(b,2,d*d) # (B x 2 x 8*8)
-            
             x = torch.cat([x, self.coord_tensor], 1)    # (B x 24+2 x 8*8)
             x = x.permute(0, 2, 1)    # (B x 64 x 24+2)
         
